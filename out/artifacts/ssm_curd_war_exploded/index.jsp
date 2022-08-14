@@ -210,6 +210,7 @@
 		function build_emps_table(result){
 			//清空table表格
 			$("#emps_table tbody").empty();
+			
 			var emps = result.extend.pageInfo.list;
 			$.each(emps,function(index,item){
 				var checkBoxTd = $("<td><input type='checkbox' class='check_item'/></td>");
