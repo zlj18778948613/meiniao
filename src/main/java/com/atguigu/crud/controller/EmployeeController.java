@@ -5,10 +5,12 @@ import com.atguigu.crud.bean.Msg;
 import com.atguigu.crud.service.EmployeeService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -22,6 +24,18 @@ public class EmployeeController {
 
     @Autowired
     EmployeeService employeeService;
+
+    //员工保存
+    @RequestMapping(value = "/emp",method = RequestMethod.POST)
+    @ResponseBody
+    // 页面传输的数据和参数一致的情况下会自动封装
+    public Msg saveEmp(Employee employee){
+        employeeService.saveEmp(employee);
+
+        return Msg.success();
+    }
+
+
 
     @RequestMapping("/emps")
     @ResponseBody
@@ -39,6 +53,7 @@ public class EmployeeController {
        PageInfo page = new PageInfo(emps, 5);
        return Msg.success().add("pageInfo",page);
    }
+
 
 
 

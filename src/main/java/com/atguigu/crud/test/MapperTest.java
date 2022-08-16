@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.List;
 import java.util.UUID;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -45,6 +46,25 @@ public class MapperTest {
         }
 
 
+        System.out.println("运行成功");
+    }
+
+
+    @Test
+    public void selectEmpData() {
+
+        // 1.插入员工信息
+        //employeeMapper.insertSelective(new Employee());
+
+        //2.批量写入数据
+
+       List<Employee> employees =  employeeMapper.selectByExampleWithDept(null);
+
+        for (Employee e:
+             employees) {
+            System.out.println(e.getEmpId()+","+e.getEmpName()+","+e.getEmail());
+            System.out.println("--------------------------");
+        }
         System.out.println("运行成功");
     }
 }

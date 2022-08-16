@@ -359,7 +359,18 @@
 
 	}
 
-	
+	$("#emp_save_btn").click(function (){
+		$.ajax({
+			url:"${APP_PATH}/emp",
+			type:"POST",
+			data:$("#empAddModal form").serialize(),
+			success:function (result){
+				$("#empAddModal").modal('hide');
+			}
+		});
+	});
+
+
 </script>
 </body>
 </html>

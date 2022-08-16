@@ -19,4 +19,16 @@ public class EmployeeService {
     public List<Employee> getAll(){
         return employeeMapper.selectByExampleWithDept(null);
     }
+
+    /**
+     * @作者: zhulinjia
+     * @时间: 2022/8/16 10:11
+     * @Return:
+     * @Trans:
+     * 保存员工的方法
+     */
+
+    public void saveEmp(Employee employee){
+        employeeMapper.insertSelective(employee);
+    }
 }
