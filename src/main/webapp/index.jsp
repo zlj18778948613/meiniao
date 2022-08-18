@@ -23,7 +23,8 @@
 			src="${APP_PATH }/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 </head>
 <body>
-<!-- 员工修改的模态框 -->
+
+<!---->
 <div class="modal fade" id="empUpdateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
@@ -476,6 +477,71 @@
 				}
 			}
 		});
+	});
+   //1、按钮创建之前就会自动绑定了click,所以绑定不上
+	//2、可以使用on进行事件的绑定，不管是在按钮创建之前还是按钮创建之后
+
+	$(document).on("click",".edit_btn",function (){
+		//alert("edit");
+		//查出员工信息,并显示。
+		getEmp($(this).attr("edit-id"));
+
+		//查出部门信息，并显示在模态框列表
+		getDepts("#empUpdateModal select");
+
+		//将员工ID传递给模态框更新按钮.
+		 $("#emp_update_btn").attr("edit-id",$(this).attr("edit-id"))
+
+		$("#empUpdateModal").modal({
+			backdrop: "static"
+		});
+	});
+
+	function  getEmp(id){
+        $.ajax({
+			url:"${APP_PATH}/emp/"+id,
+			type:"GET",
+			success:function (result){
+				var empData = result.extend.emp;
+				$("#empName_update_static").text(empData.empName);
+				$("#email_update_input").val(empData.email);
+				$("#empUpdateModal input[name=gender]").val([empData.gender]);
+				$("#empUpdateModal select").val([empData.dId]);
+			}
+		});
+	}
+
+	//点击更新，更新员工信息
+	$("#emp_update_btn").click(function (){
+		//1、校验邮箱格式是否正确
+		//1、校验邮箱信息
+		var email = $("#email_update_input").val();
+		var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+		if(!regEmail.test(email)){
+			show_validate_msg("#email_update_input", "error", "邮箱格式不正确");
+			return false;
+		}else{
+			show_validate_msg("#email_update_input", "success", "");
+		}
+		//2、 发送AJAX请求
+
+
+		$.ajax({
+			url:"${APP_PATH}/emp/"+$(this).attr("edit-id"),
+			type:"PUT",
+			data:$("#empUpdateModal form").serialize(),
+			success:function (result){
+				//修改员工信息保存成功；
+				//1、关闭模态框
+				$("#empUpdateModal").modal('hide');
+
+				//2、来到最后一页，显示刚才保存的数据
+				//发送ajax请求显示最后一页数据即可
+				to_page(currentPage);
+			}
+		});
+
+
 	});
 
 

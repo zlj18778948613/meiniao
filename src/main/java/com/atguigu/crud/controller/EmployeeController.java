@@ -9,12 +9,15 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 处理员工CRUD请求
@@ -22,8 +25,49 @@ import java.util.List;
 @Controller
 public class EmployeeController {
 
+
+
+
+
+
     @Autowired
     EmployeeService employeeService;
+
+    /**
+     * @作者: zhulinjia
+     * @时间: 2022/8/18 14:25
+     * @Return:
+     * @Trans:
+     * 更新员工信息
+     */
+    @ResponseBody
+    @RequestMapping(value="/emp/{empId}",method=RequestMethod.PUT)
+    public Msg saveEmp(Employee employee, HttpServletRequest request){
+        System.out.println("将要更新的员工数据："+employee);
+        employeeService.updateEmp(employee);
+        return Msg.success();
+    }
+
+
+    /**
+     * @作者: zhulinjia
+     * @时间: 2022/8/18 10:14
+     * @Return:
+     * @Trans:
+     * 查询员工name的方法
+     */
+    @RequestMapping(value="/emp/{id}",method=RequestMethod.GET)
+    @ResponseBody
+    public Msg getEmp(@PathVariable("id")Integer id){
+
+        Employee employee = employeeService.getEmp(id);
+        return Msg.success().add("emp", employee);
+    }
+
+
+
+
+
 
     /**
      * @作者: zhulinjia
@@ -77,10 +121,30 @@ public class EmployeeController {
     @RequestMapping(value = "/emp", method = RequestMethod.POST)
     @ResponseBody
     // 页面传输的数据和参数一致的情况下会自动封装
-    public Msg saveEmp(Employee employee) {
-        employeeService.saveEmp(employee);
 
-        return Msg.success();
+    //使用JSR303，员工保存的时候，使用@Valid,需要绑定bindingResult才能获取到校验失败的结果result
+    public Msg saveEmp(@Valid  Employee employee, BindingResult result) {
+        if (result.hasErrors()){
+            //封装错误信息
+            Map<String,Object> map = new HashMap<>();
+
+            //校验失败应该返回失败,在模态框当中，显示校验错误信息
+            List<FieldError> fieldErrors = result.getFieldErrors();
+            for (FieldError f:
+                    fieldErrors) {
+                System.out.println("错误的字段名"+f.getField());
+                System.out.println("错误信息"+f.getDefaultMessage());
+                map.put(f.getField(),f.getDefaultMessage());
+            }
+
+            return Msg.fail().add("errorFields",map);
+        }else {
+            employeeService.saveEmp(employee);
+
+            return Msg.success();
+        }
+
+
     }
 
 

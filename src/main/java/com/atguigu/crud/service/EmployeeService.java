@@ -16,6 +16,32 @@ public class EmployeeService {
 
     /**
      * @作者: zhulinjia
+     * @时间: 2022/8/18 14:29
+     * @Return:
+     * @Trans:
+     * 员工更新方法
+     */
+    public void updateEmp(Employee employee) {
+        // TODO Auto-generated method stub
+        employeeMapper.updateByPrimaryKeySelective(employee);
+    }
+
+
+    /**
+     * @作者: zhulinjia
+     * @时间: 2022/8/18 10:21
+     * @Return:
+     * @Trans:
+     * 按照员工ID进行查询员工信息
+     */
+     public Employee getEmp(Integer id){
+         Employee employee = employeeMapper.selectByPrimaryKey(id);
+         return employee;
+     }
+
+
+    /**
+     * @作者: zhulinjia
      * @时间: 2022/8/16 14:41
      * @Return: 返回 true 代表当前姓名可以用  返回false 代表用户名不可用
      * @Trans:  用户名
