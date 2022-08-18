@@ -16,6 +16,19 @@ public class EmployeeService {
 
     /**
      * @作者: zhulinjia
+     * @时间: 2022/8/18 17:12
+     * @Return:
+     * @Trans:
+     * 删除员工信息
+     */
+    public void deleteEmp(Integer empId) {
+        // TODO Auto-generated method stub
+        employeeMapper.deleteByPrimaryKey(empId);
+    }
+
+
+    /**
+     * @作者: zhulinjia
      * @时间: 2022/8/18 14:29
      * @Return:
      * @Trans:

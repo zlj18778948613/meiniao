@@ -33,6 +33,23 @@ public class EmployeeController {
     @Autowired
     EmployeeService employeeService;
 
+
+    /**
+     * @作者: zhulinjia
+     * @时间: 2022/8/18 17:09
+     * @Return:
+     * @Trans:
+     *删除员工信息
+     */
+    @ResponseBody
+    @DeleteMapping("/emp{empId}")
+    public  Msg deleteEmpByid(@PathVariable("empId") Integer empId){
+        System.out.println("这个就是我的id："+empId);
+        employeeService.deleteEmp(empId);
+        return Msg.success();
+    }
+
+
     /**
      * @作者: zhulinjia
      * @时间: 2022/8/18 14:25
@@ -42,7 +59,7 @@ public class EmployeeController {
      */
     @ResponseBody
     @RequestMapping(value="/emp/{empId}",method=RequestMethod.PUT)
-    public Msg saveEmp(Employee employee, HttpServletRequest request){
+    public Msg saveEmp(Employee employee){
         System.out.println("将要更新的员工数据："+employee);
         employeeService.updateEmp(employee);
         return Msg.success();
