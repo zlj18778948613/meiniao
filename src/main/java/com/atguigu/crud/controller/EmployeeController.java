@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,27 +26,34 @@ import java.util.Map;
 @Controller
 public class EmployeeController {
 
-
-
-
-
-
     @Autowired
     EmployeeService employeeService;
 
 
     /**
      * @作者: zhulinjia
-     * @时间: 2022/8/18 17:09
+     * @时间: 2022/8/19 13:34
      * @Return:
      * @Trans:
-     *删除员工信息
+     * 批量删除员工信息
      */
     @ResponseBody
-    @DeleteMapping("/emp{empId}")
-    public  Msg deleteEmpByid(@PathVariable("empId") Integer empId){
-        System.out.println("这个就是我的id："+empId);
-        employeeService.deleteEmp(empId);
+    @RequestMapping(value="/emp/{ids}",method=RequestMethod.DELETE)
+    public  Msg deleteEmpByid(@PathVariable("ids") String ids){
+
+        //包含-符合 即为多行删除
+        if(ids.contains("-")){
+            ArrayList<Integer> list = new ArrayList<>();
+            String[] split = ids.split("-");
+            for (String s: split) {
+                list.add(Integer.parseInt(s));
+            }
+            employeeService.deleteBatch(list);
+
+        }else{
+            Integer id = Integer.parseInt(ids);
+            employeeService.deleteEmp(id);
+        }
         return Msg.success();
     }
 

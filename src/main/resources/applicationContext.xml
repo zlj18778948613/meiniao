@@ -7,8 +7,7 @@
 
 
     <context:component-scan base-package="com.atguigu">
-        <context:exclude-filter type="annotation"
-                                expression="org.springframework.stereotype.Controller" />
+        <context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
     </context:component-scan>
 
     <!-- Spring的配置文件，这里主要配置和业务逻辑有关的 -->
@@ -67,6 +66,4 @@
     </tx:advice>
 
     <!-- Spring配置文件的核心点（数据源、与mybatis的整合，事务控制） -->
-
-
 </beans>

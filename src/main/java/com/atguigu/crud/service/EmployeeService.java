@@ -6,6 +6,7 @@ import com.atguigu.crud.dao.EmployeeMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -86,5 +87,14 @@ public class EmployeeService {
 
     public void saveEmp(Employee employee){
         employeeMapper.insertSelective(employee);
+    }
+
+    public void deleteBatch(ArrayList<Integer> list) {
+
+        EmployeeExample example = new EmployeeExample();
+        EmployeeExample.Criteria criteria = example.createCriteria();
+        criteria.andEmpIdIn(list);
+        employeeMapper.deleteByExample(example);
+
     }
 }

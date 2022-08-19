@@ -23,8 +23,7 @@
 			src="${APP_PATH }/static/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 </head>
 <body>
-
-<!---->
+<!-- 员工修改的模态框 -->
 <div class="modal fade" id="empUpdateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
@@ -423,18 +422,6 @@
 		});
 	});
 
-	//邮箱表单发生改变的时候，进行校验。
-	$("#email_add_input").change(function(){
-		var email = $("#email_add_input").val();
-		var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
-		if(!regEmail.test(email)){
-			show_validate_msg("#email_add_input","error","邮箱格式不正确");
-		}else{
-			show_validate_msg("#email_add_input","success","邮箱格式正确");
-		}
-
-	});
-
 	//点击保存，保存员工。
 	$("#emp_save_btn").click(function(){
 		//1、模态框中填写的表单数据提交给服务器进行保存
@@ -478,30 +465,32 @@
 			}
 		});
 	});
-   //1、按钮创建之前就会自动绑定了click,所以绑定不上
-	//2、可以使用on进行事件的绑定，不管是在按钮创建之前还是按钮创建之后
 
-	$(document).on("click",".edit_btn",function (){
+	//1、我们是按钮创建之前就绑定了click，所以绑定不上。
+	//1）、可以在创建按钮的时候绑定。    2）、绑定点击.live()
+	//jquery新版没有live，使用on进行替代
+	$(document).on("click",".edit_btn",function(){
 		//alert("edit");
-		//查出员工信息,并显示。
+
+
+		//1、查出部门信息，并显示部门列表
+		getDepts("#empUpdateModal select");
+		//2、查出员工信息，显示员工信息
 		getEmp($(this).attr("edit-id"));
 
-		//查出部门信息，并显示在模态框列表
-		getDepts("#empUpdateModal select");
-
-		//将员工ID传递给模态框更新按钮.
-		 $("#emp_update_btn").attr("edit-id",$(this).attr("edit-id"))
-
+		//3、把员工的id传递给模态框的更新按钮
+		$("#emp_update_btn").attr("edit-id",$(this).attr("edit-id"));
 		$("#empUpdateModal").modal({
-			backdrop: "static"
+			backdrop:"static"
 		});
 	});
 
-	function  getEmp(id){
-        $.ajax({
+	function getEmp(id){
+		$.ajax({
 			url:"${APP_PATH}/emp/"+id,
 			type:"GET",
-			success:function (result){
+			success:function(result){
+				//console.log(result);
 				var empData = result.extend.emp;
 				$("#empName_update_static").text(empData.empName);
 				$("#email_update_input").val(empData.email);
@@ -512,8 +501,8 @@
 	}
 
 	//点击更新，更新员工信息
-	$("#emp_update_btn").click(function (){
-		//1、校验邮箱格式是否正确
+	$("#emp_update_btn").click(function(){
+		//验证邮箱是否合法
 		//1、校验邮箱信息
 		var email = $("#email_update_input").val();
 		var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
@@ -523,26 +512,85 @@
 		}else{
 			show_validate_msg("#email_update_input", "success", "");
 		}
-		//2、 发送AJAX请求
 
-
+		//2、发送ajax请求保存更新的员工数据
 		$.ajax({
 			url:"${APP_PATH}/emp/"+$(this).attr("edit-id"),
 			type:"PUT",
 			data:$("#empUpdateModal form").serialize(),
-			success:function (result){
-				//修改员工信息保存成功；
-				//1、关闭模态框
-				$("#empUpdateModal").modal('hide');
-
-				//2、来到最后一页，显示刚才保存的数据
-				//发送ajax请求显示最后一页数据即可
+			success:function(result){
+				//alert(result.msg);
+				//1、关闭对话框
+				$("#empUpdateModal").modal("hide");
+				//2、回到本页面
 				to_page(currentPage);
 			}
 		});
+	});
+
+	//单个删除
+	$(document).on("click",".delete_btn",function(){
+		//1、弹出是否确认删除对话框
+		var empName = $(this).parents("tr").find("td:eq(2)").text();
+		var empId = $(this).attr("del-id");
+		//alert($(this).parents("tr").find("td:eq(1)").text());
+		if(confirm("确认删除【"+empName+"】吗？")){
+			//确认，发送ajax请求删除即可
+			$.ajax({
+				url:"${APP_PATH}/emp/"+empId,
+				type:"DELETE",
+				success:function(result){
+					alert(result.msg);
+					//回到本页
+					to_page(currentPage);
+				}
+			});
+		}
+ 	});
+
+	//完成全选//全不选的功能
+	$("#check_all").click(function (){
+		//alert($(this).prop("checked"));
+
+		$(".check_item").prop("checked",$(this).prop("checked"));
+	});
+
+	// check_item
+	$(document).on("click",".check_item",function (){
+
+		var flag = $(".check_item:checked").length==$(".check_item").length;
+		$("#check_all").prop("checked",flag);
+	});
+
+	$("#emp_delete_all_btn").click(function (){
+		var empNames = "";
+		var del_idstr = "";
+		$.each($(".check_item:checked"),function(){
+			//this
+			empNames += $(this).parents("tr").find("td:eq(2)").text()+",";
+			//组装员工id字符串
+			del_idstr += $(this).parents("tr").find("td:eq(1)").text()+"-";
+		});
+		empNames = empNames.substring(0, empNames.length-1);
+		//去除删除的id多余的-
+		del_idstr = del_idstr.substring(0, del_idstr.length-1);
+		if(confirm("确认删除["+empNames+"]?")){
+			//发送ajax请求删除
+			$.ajax({
+				url:"${APP_PATH}/emp/"+del_idstr,
+				type:"DELETE",
+				success:function(result){
+					alert(result.msg);
+					//回到当前页面
+					to_page(currentPage);
+				}
+			});
+		}
 
 
 	});
+
+
 
 
 </script>

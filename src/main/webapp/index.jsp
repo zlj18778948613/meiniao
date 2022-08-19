@@ -546,26 +546,23 @@
 				}
 			});
 		}
-	});
+ 	});
 
-	//完成全选/全不选功能
-	$("#check_all").click(function(){
-		//attr获取checked是undefined;
-		//我们这些dom原生的属性；attr获取自定义属性的值；
-		//prop修改和读取dom原生属性的值
+	//完成全选//全不选的功能
+	$("#check_all").click(function (){
+		//alert($(this).prop("checked"));
+
 		$(".check_item").prop("checked",$(this).prop("checked"));
 	});
 
-	//check_item
-	$(document).on("click",".check_item",function(){
-		//判断当前选择中的元素是否5个
+	// check_item
+	$(document).on("click",".check_item",function (){
+
 		var flag = $(".check_item:checked").length==$(".check_item").length;
 		$("#check_all").prop("checked",flag);
 	});
 
-	//点击全部删除，就批量删除
-	$("#emp_delete_all_btn").click(function(){
-		//
+	$("#emp_delete_all_btn").click(function (){
 		var empNames = "";
 		var del_idstr = "";
 		$.each($(".check_item:checked"),function(){
@@ -574,11 +571,10 @@
 			//组装员工id字符串
 			del_idstr += $(this).parents("tr").find("td:eq(1)").text()+"-";
 		});
-		//去除empNames多余的,
 		empNames = empNames.substring(0, empNames.length-1);
 		//去除删除的id多余的-
 		del_idstr = del_idstr.substring(0, del_idstr.length-1);
-		if(confirm("确认删除【"+empNames+"】吗？")){
+		if(confirm("确认删除["+empNames+"]?")){
 			//发送ajax请求删除
 			$.ajax({
 				url:"${APP_PATH}/emp/"+del_idstr,
@@ -590,7 +586,13 @@
 				}
 			});
 		}
+
+
 	});
+
+
+
+
 </script>
 </body>
 </html>
